@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom"
-import { FaHome, FaTable } from "react-icons/fa"
+import { FaHome, FaMoneyBill, FaTable } from "react-icons/fa"
+import { FaTableCells } from "react-icons/fa6"
 
 interface Props {
 
@@ -33,6 +34,21 @@ const SideBar = (props: Props) => {
               <FaTable />
               <h6 className="ml-3">Income Statement</h6>
 
+            </Link>
+
+            <Link to="balance-sheet" className="flex md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
+              
+              <FaTableCells />
+              <h6 className="ml-3">Balance Sheet</h6>
+              
+            </Link>
+
+            <Link to="cash-flow" className="flex md:min-w-full text-blueGray-500 text-xs uppercase font-bold block pt-1 pb-4 no-underline">
+
+            <FaMoneyBill />
+
+              <h6 className="ml-3">Cash Flow Statement</h6>
+              
             </Link>
 
         </div>

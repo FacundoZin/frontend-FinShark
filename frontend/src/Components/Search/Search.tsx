@@ -1,4 +1,5 @@
 import { SyntheticEvent } from "react"
+import { FaSearch } from "react-icons/fa";
 
 interface props{
   onSearchSubmit: (e:SyntheticEvent) => void;
@@ -22,6 +23,7 @@ const Search: React.FC<props> = ({onSearchSubmit, search, handleSearchChange}: p
           value={search}
           onChange={handleSearchChange}
         ></input>
+          <FaSearch className="absolute right-14 top-1/2 transform -translate-y-1/2 text-gray-500" />
       </form>
     </div>
   </section>

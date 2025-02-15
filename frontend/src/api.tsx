@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CompanyIncomeStatement, CompanyKeyMetrics, CompanyProfile, CompanySearch } from "./companydates";
+import { CompanyBalanceSheet, CompanyCashFlow, CompanyIncomeStatement, CompanyKeyMetrics, CompanyProfile, CompanySearch } from "./companydates";
 
 
 
@@ -151,5 +151,84 @@ export const GetIncomeStatement = async (query: string) => {
     }
 
 };
+
+export const Getbalancesheet = async (query: string) => {
+
+    try{
+
+        const apikey = import.meta.env.VITE_APP_API_KEY;
+        if (!apikey) {
+            console.log("La API key no está definida. Verificá tu archivo .env");
+            return null
+        }
+
+        const IncomeStatement = axios.get<CompanyBalanceSheet[]>(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${query}?limit=40&apikey=${apikey}`);
+
+        return IncomeStatement;
+    
+    }
+    catch(error){
+        if (axios.isAxiosError(error)) {
+
+            if (error.response) { 
+                console.log("Error de respuesta del servidor:", error.response);
+                return null
+            } else if (error.request) {
+                console.log("No se recibió respuesta del servidor:", error.request);
+                return null
+            } else {
+                console.log("Error en la configuración de la solicitud:", error.message);
+                return null
+            }
+
+        }
+        else{
+            console.log("Error desconocido:", error);
+            return null
+        }
+    }
+
+};
+
+export const GetCashFlow = async (query: string) => {
+
+    try{
+
+        const apikey = import.meta.env.VITE_APP_API_KEY;
+        if (!apikey) {
+            console.log("La API key no está definida. Verificá tu archivo .env");
+            return null
+        }
+
+        const IncomeStatement = axios.get<CompanyCashFlow[]>(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${query}?limit=40&apikey=${apikey}`);
+
+        return IncomeStatement;
+    
+    }
+    catch(error){
+        if (axios.isAxiosError(error)) {
+
+            if (error.response) { 
+                console.log("Error de respuesta del servidor:", error.response);
+                return null
+            } else if (error.request) {
+                console.log("No se recibió respuesta del servidor:", error.request);
+                return null
+            } else {
+                console.log("Error en la configuración de la solicitud:", error.message);
+                return null
+            }
+
+        }
+        else{
+            console.log("Error desconocido:", error);
+            return null
+        }
+    }
+
+};
+
+
+
 
 
