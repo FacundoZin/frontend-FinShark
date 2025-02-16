@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { GetCashFlow } from "../../api";
 import Table from "../Table/Table";
 import RatioList from "../RatioList/RatioList";
+import Spinner from "../Spinner/Spinner";
 
 type Props = {}
 
@@ -63,9 +64,7 @@ const CashFlow = (props: Props) => {
             <Table configs={config} data={CashFlowStatement} />
       </>
     ) : (
-      <>
-      loading...
-      </>
+      <Spinner />
     )}
     </>
   )

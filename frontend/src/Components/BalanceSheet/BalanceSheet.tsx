@@ -3,6 +3,7 @@ import { CompanyBalanceSheet } from "../../companydates"
 import { useEffect, useState } from "react"
 import { Getbalancesheet } from "../../api"
 import RatioList from "../RatioList/RatioList"
+import Spinner from "../Spinner/Spinner"
 
 type Props = {}
 
@@ -83,7 +84,7 @@ const BalanceSheet = (props: Props) => {
         <RatioList config={configs} data={balancesheet}/>
         </>
     ):(
-        <>loading...</>
+      <Spinner />
     )}
     </>
   )

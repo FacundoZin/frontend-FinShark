@@ -38,12 +38,9 @@ const CompanyPage = (props: Props) => {
             <Mosaics title="Price" content={"$" + company.price.toString()} />
             <Mosaics title="DCF" content={"$" + company.dcf.toString()} />
             <Mosaics title="Sector" content={company.sector} />
-
-            <p className="bg-white shadow rounded text-medium font-medium text-gray-900 p-3 mt-1 m-4">
-              {company.description}
-            </p>
             
         </CompanyDashboard>
+        
       </div>
       
         ): (
