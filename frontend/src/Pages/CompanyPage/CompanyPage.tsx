@@ -5,6 +5,7 @@ import { Get_company_info } from "../../api";
 import SideBar from "../../Components/SideBar/SideBar";
 import CompanyDashboard from "../../Components/CompanyDashboard/CompanyDashboard";
 import Mosaics from "../../Components/Mosaics/Mosaics";
+import TenKFinder from "../../Components/TenKFinder/TenKFinder";
 
 interface Props {
     
@@ -12,7 +13,7 @@ interface Props {
 
 const CompanyPage = (props: Props) => {
 
-    let { ticker } = useParams();
+    let { ticker } = useParams<string>();
     const [company, setCompany] = useState<CompanyProfile>();
   
     useEffect(() => {
@@ -38,7 +39,9 @@ const CompanyPage = (props: Props) => {
             <Mosaics title="Price" content={"$" + company.price.toString()} />
             <Mosaics title="DCF" content={"$" + company.dcf.toString()} />
             <Mosaics title="Sector" content={company.sector} />
-            
+
+            <TenKFinder ticker={ticker!}/>
+ 
         </CompanyDashboard>
         
       </div>

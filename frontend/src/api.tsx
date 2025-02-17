@@ -1,5 +1,5 @@
 import axios from "axios";
-import { CompanyBalanceSheet, CompanyCashFlow, CompanyIncomeStatement, CompanyKeyMetrics, CompanyProfile, CompanySearch } from "./companydates";
+import { CompanyBalanceSheet, CompanyCashFlow, CompanyIncomeStatement, CompanyKeyMetrics, CompanyProfile, CompanySearch, CompanyTenK } from "./companydates";
 
 
 
@@ -87,7 +87,7 @@ export const GetCompanyKeymetrics = async (query: string) => {
             return null
         }
 
-        const KeyMetrics = axios.get<CompanyKeyMetrics[]>(`https://financialmodelingprep.com/api/v3/key-metrics-ttm/${query}?apikey=${apikey}`);
+        const KeyMetrics = axios.get<CompanyKeyMetrics[]>(`https://financialmodelingprep.com/api/v3/key-metrics-ttm/${query}?limit=40&apikey=${apikey}`);
 
         return KeyMetrics;
     
@@ -124,7 +124,7 @@ export const GetIncomeStatement = async (query: string) => {
             return null
         }
 
-        const IncomeStatement = axios.get<CompanyIncomeStatement[]>(`https://financialmodelingprep.com/api/v3/income-statement/${query}?limit=40&apikey=${apikey}`);
+        const IncomeStatement = axios.get<CompanyIncomeStatement[]>(`https://financialmodelingprep.com/api/v3/income-statement/${query}?limit=50&apikey=${apikey}`);
 
         return IncomeStatement;
     
@@ -162,7 +162,7 @@ export const Getbalancesheet = async (query: string) => {
             return null
         }
 
-        const IncomeStatement = axios.get<CompanyBalanceSheet[]>(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${query}?limit=40&apikey=${apikey}`);
+        const IncomeStatement = axios.get<CompanyBalanceSheet[]>(`https://financialmodelingprep.com/api/v3/balance-sheet-statement/${query}?limit=20&apikey=${apikey}`);
 
         return IncomeStatement;
     
@@ -200,7 +200,7 @@ export const GetCashFlow = async (query: string) => {
             return null
         }
 
-        const IncomeStatement = axios.get<CompanyCashFlow[]>(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${query}?limit=40&apikey=${apikey}`);
+        const IncomeStatement = axios.get<CompanyCashFlow[]>(`https://financialmodelingprep.com/api/v3/cash-flow-statement/${query}?limit=100&apikey=${apikey}`);
 
         return IncomeStatement;
     
@@ -227,6 +227,46 @@ export const GetCashFlow = async (query: string) => {
     }
 
 };
+
+export const GetTenK= async (query: string) => {
+
+    try{
+
+        const apikey = import.meta.env.VITE_APP_API_KEY;
+        if (!apikey) {
+            console.log("La API key no está definida. Verificá tu archivo .env");
+            return null
+        }
+
+        const IncomeStatement = axios.get<CompanyTenK[]>(`https://financialmodelingprep.com/api/v3/sec_filings/${query}?type=10-k&page=0&apikey=${apikey}`);
+
+        return IncomeStatement;
+    
+    }
+    catch(error){
+        if (axios.isAxiosError(error)) {
+
+            if (error.response) { 
+                console.log("Error de respuesta del servidor:", error.response);
+                return null
+            } else if (error.request) {
+                console.log("No se recibió respuesta del servidor:", error.request);
+                return null
+            } else {
+                console.log("Error en la configuración de la solicitud:", error.message);
+                return null
+            }
+
+        }
+        else{
+            console.log("Error desconocido:", error);
+            return null
+        }
+    }
+
+};
+
+
 
 
 
