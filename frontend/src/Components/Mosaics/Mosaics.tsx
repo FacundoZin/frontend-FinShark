@@ -1,3 +1,5 @@
+import React from "react";
+
 interface Props {
     title: string;
     content: string;
@@ -22,4 +24,4 @@ const Mosaics = ({title,content}: Props) => {
   </div>
   )
 }
-export default Mosaics
+export default React.memo(Mosaics)
