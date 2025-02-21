@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.Data;
+using api.DTOs.Stock;
+using api.mappers;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -26,7 +28,9 @@ namespace api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var stocks = await _context.Stocks.ToListAsync();
-            return Ok(stocks);
+            var result = stocks.Select(s => s.toStockDto());
+
+            return Ok(result);
         }
 
         [HttpGet("{id}")]
@@ -43,6 +47,15 @@ namespace api.Controllers
                 return Ok(stock);
             }
 
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateStock([FromBody] CreateStockDto Stock)
+        {
+            var stockmodel = Stock.ToCreateStockDto();
+            _context.Stocks.Add(stockmodel);
+            _context.SaveChanges();
+            return CreatedAtAction(nameof(GetByID), new { id = stockmodel.ID }, stockmodel.toStockDto());
         }
     }
 }
