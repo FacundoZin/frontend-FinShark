@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using api.Data;
 using api.DTOs.Stock;
 using api.mappers;
+using api.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,12 +51,54 @@ namespace api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateStock([FromBody] CreateStockDto Stock)
+        public async Task<IActionResult> Create([FromBody] CreateStockDto NewStock)
         {
-            var stockmodel = Stock.ToCreateStockDto();
-            _context.Stocks.Add(stockmodel);
-            _context.SaveChanges();
-            return CreatedAtAction(nameof(GetByID), new { id = stockmodel.ID }, stockmodel.toStockDto());
+            var stock = NewStock.ToCreateStockDto();
+            _context.Stocks.Add(stock);
+            await _context.SaveChangesAsync();
+            return CreatedAtAction(nameof(GetByID), new { id = stock.ID }, stock.toStockDto());
+        }
+
+        [HttpPut]
+        [Route("{id}")]
+        public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockDto updateStockDto)
+        {
+
+
+            Stock stock = await _context.Stocks.FindAsync(id);
+
+            if (stock == null)
+            {
+                return NotFound();
+            }
+
+            stock.Symbol = updateStockDto.Symbol;
+            stock.Companyname = updateStockDto.Companyname;
+            stock.Purchase = updateStockDto.Purchase;
+            stock.LastDiv = updateStockDto.LastDiv;
+            stock.Industry = updateStockDto.Industry;
+            stock.MarketCap = updateStockDto.MarketCap;
+
+            await _context.SaveChangesAsync();
+
+            return Ok(stock);
+        }
+
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+
+            var stock = await _context.Stocks.FindAsync(id);
+
+            if (stock == null)
+            {
+                return NotFound();
+            }
+
+            _context.Stocks.Remove(stock);
+            await _context.SaveChangesAsync();
+            return NotFound();
         }
     }
 }
