@@ -1,4 +1,6 @@
 using api.Data;
+using api.Interfaces;
+using api.Repository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -13,6 +15,7 @@ builder.Services.AddDbContext<ApplicationDBcontext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+builder.Services.AddScoped<Istock, StockRepository>();
 
 var app = builder.Build();
 
