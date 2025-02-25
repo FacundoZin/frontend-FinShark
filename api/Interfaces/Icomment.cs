@@ -11,5 +11,6 @@ namespace api.Interfaces
         Task<List<Comment>> GetAllasync();
         Task<Comment> Getbyid(int id);
         Task<Comment> Createasync(Comment comment);
+        Task<Comment?> Deleteasync(int id);
     }
 }

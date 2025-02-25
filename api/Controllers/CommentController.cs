@@ -64,5 +64,19 @@ namespace api.Controllers
 
         }
 
+        [HttpDelete]
+        [Route("{id}")]
+        public async Task<IActionResult> Delete([FromRoute] int id)
+        {
+            var comment = await _CommentRepository.Deleteasync(id);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
+        }
+
     }
 }
