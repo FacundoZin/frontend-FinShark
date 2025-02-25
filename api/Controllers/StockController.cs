@@ -15,7 +15,7 @@ namespace api.Controllers
 
     [Route("api/stock")]
     [ApiController]
-    public class StockController : Controller
+    public class StockController : ControllerBase
     {
 
         private readonly Istock Stockrepository;
@@ -28,9 +28,9 @@ namespace api.Controllers
         public async Task<IActionResult> GetAll()
         {
             var stocks = await Stockrepository.GetAllasync();
-            var result = stocks.Select(s => s.toStockDto());
+            var stockdto = stocks.Select(s => s.toStockDto());
 
-            return Ok(result);
+            return Ok(stockdto);
         }
 
         [HttpGet("{id}")]
@@ -42,17 +42,16 @@ namespace api.Controllers
             {
                 return NotFound();
             }
-            else
-            {
-                return Ok(stock);
-            }
+
+            return Ok(stock.toStockDto());
+
 
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateStockDto NewStock)
+        public async Task<IActionResult> Create([FromBody] CreateStockDto createStockDto)
         {
-            var stock = NewStock.ToCreateStockDto();
+            var stock = createStockDto.ToCreateStockDto();
             await Stockrepository.Createasync(stock);
             return CreatedAtAction(nameof(GetByID), new { id = stock.ID }, stock.toStockDto());
         }
@@ -62,7 +61,6 @@ namespace api.Controllers
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockDto updatedStock)
         {
 
-
             var stock = await Stockrepository.Updateasync(id, updatedStock);
 
             if (stock == null)
@@ -70,7 +68,7 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            return Ok(stock);
+            return Ok(stock.toStockDto());
         }
 
         [HttpDelete]
@@ -85,7 +83,7 @@ namespace api.Controllers
                 return NotFound();
             }
 
-            return NotFound();
+            return NoContent();
         }
     }
 }
