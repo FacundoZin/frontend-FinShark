@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.DTOs.Account;
+using api.Interfaces;
 using api.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +16,15 @@ namespace api.Controllers
     {
 
         private readonly UserManager<AppUser> _UserManager;
-        public AccountController(UserManager<AppUser> usermanager)
+        private readonly ITokenService _Tokenservice;
+
+
+        public AccountController(UserManager<AppUser> usermanager, ITokenService tokenService)
         {
             _UserManager = usermanager;
+            _Tokenservice = tokenService;
         }
+
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
@@ -33,7 +39,6 @@ namespace api.Controllers
 
                 var AppUser = new AppUser
                 {
-
                     UserName = register.Username,
                     Email = register.Email
                 };
@@ -46,7 +51,14 @@ namespace api.Controllers
 
                     if (role.Succeeded)
                     {
-                        return Ok();
+                        return Ok(
+                            new NewUserDto
+                            {
+                                UserName = AppUser.UserName!,
+                                Email = AppUser.Email!,
+                                token = _Tokenservice.CreateToken(AppUser)
+                            }
+                        );
                     }
                     else
                     {

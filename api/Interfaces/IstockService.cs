@@ -9,7 +9,7 @@ using api.Models;
 namespace api.Interfaces
 {
 
-    public interface Istock
+    public interface IstockService
     {
         Task<List<Stock>> GetAllasync(QueryObject query);
         Task<Stock?> Getbyidasync(int id);

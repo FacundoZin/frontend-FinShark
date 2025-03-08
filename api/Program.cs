@@ -22,8 +22,10 @@ builder.Services.AddDbContext<ApplicationDBcontext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
 
-builder.Services.AddScoped<Istock, StockRepository>();
-builder.Services.AddScoped<Icomment, CommentRepository>();
+builder.Services.AddScoped<IstockService, StockRepository>();
+builder.Services.AddScoped<IcommentService, CommentRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
+
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;

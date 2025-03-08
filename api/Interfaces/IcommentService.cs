@@ -6,7 +6,7 @@ using api.Models;
 
 namespace api.Interfaces
 {
-    public interface Icomment
+    public interface IcommentService
     {
         Task<List<Comment>> GetAllasync();
         Task<Comment> Getbyid(int id);

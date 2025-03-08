@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
-    public class CommentRepository : Icomment
+    public class CommentRepository : IcommentService
     {
         private readonly ApplicationDBcontext _Context;
         public CommentRepository(ApplicationDBcontext dBcontext)

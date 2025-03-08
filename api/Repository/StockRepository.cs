@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
-    public class StockRepository : Istock
+    public class StockRepository : IstockService
     {
         private readonly ApplicationDBcontext _context;
         public StockRepository(ApplicationDBcontext context)
