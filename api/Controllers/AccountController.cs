@@ -15,16 +15,13 @@ namespace api.Controllers
     [ApiController]
     public class AccountController : ControllerBase
     {
+        private readonly IaccountService _Accountservice;
 
-        private readonly UserManager<AppUser> _UserManager;
-        private readonly ITokenService _Tokenservice;
-        private readonly SignInManager<AppUser> _Signinmanager;
-
-        public AccountController(UserManager<AppUser> usermanager, ITokenService tokenService)
+        public AccountController(IaccountService accountservice)
         {
-            _UserManager = usermanager;
-            _Tokenservice = tokenService;
+            _Accountservice = accountservice;
         }
+
 
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginDto login)
@@ -34,70 +31,23 @@ namespace api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var User = await _UserManager.FindByNameAsync(login.UserName.ToLower());
+            var User = await _Accountservice.LoginAsync(login);
 
-            if (User == null) return Unauthorized("Invalid username!");
-
-            var result = await _Signinmanager.CheckPasswordSignInAsync(User, login.Password, false);
-
-            if (!result.Succeeded) return Unauthorized("username and/or password are incorrects");
-
-            return Ok(new UserDto
-            {
-                UserName = User.UserName!,
-                Email = User.Email!,
-                token = _Tokenservice.CreateToken(User)
-            });
+            return Ok(User);
         }
 
 
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto register)
         {
-            try
+            if (!ModelState.IsValid)
             {
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest(ModelState);
-                }
-
-                var AppUser = new AppUser
-                {
-                    UserName = register.Username,
-                    Email = register.Email
-                };
-
-                var createduser = await _UserManager.CreateAsync(AppUser, register.Password!);
-
-                if (createduser.Succeeded)
-                {
-                    var role = await _UserManager.AddToRoleAsync(AppUser, "User");
-
-                    if (role.Succeeded)
-                    {
-                        return Ok(
-                            new UserDto
-                            {
-                                UserName = AppUser.UserName!,
-                                Email = AppUser.Email!,
-                                token = _Tokenservice.CreateToken(AppUser)
-                            }
-                        );
-                    }
-                    else
-                    {
-                        return StatusCode(500, role.Errors);
-                    }
-                }
-                else
-                {
-                    return StatusCode(500, createduser.Errors);
-                }
+                return BadRequest(ModelState);
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
+
+            var user = await _Accountservice.RegisterAsync(register);
+
+            return Ok(user);
         }
     }
 }

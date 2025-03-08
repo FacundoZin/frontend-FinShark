@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 
 namespace api.DTOs.Account
 {
+
     public class UserDto
     {
         public string UserName { get; set; }
         public string Email { get; set; }
         public string token { get; set; }
+        public string errormessage { get; set; }
+        public bool Success => string.IsNullOrEmpty(errormessage);
     }
 }
