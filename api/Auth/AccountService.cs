@@ -15,7 +15,7 @@ namespace api.Auth
         private readonly ITokenService _Tokenservice;
         private readonly SignInManager<AppUser> _Signinmanager;
 
-        public AccountService(UserManager<AppUser> usermanager, ITokenService tokenService, SignInManager signIn)
+        public AccountService(UserManager<AppUser> usermanager, ITokenService tokenService, SignInManager<AppUser> signIn)
         {
             _UserManager = usermanager;
             _Tokenservice = tokenService;
