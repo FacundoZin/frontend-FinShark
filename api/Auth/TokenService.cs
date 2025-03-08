@@ -18,7 +18,7 @@ namespace api.Repository
         public TokenService(IConfiguration config)
         {
             _Config = config;
-            _Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Config["JWT:SigninKey"]);
+            _Key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_Config["JWT:SigninKey"]));
         }
 
         public string CreateToken(AppUser user)
@@ -45,7 +45,6 @@ namespace api.Repository
             var token = tokenhandler.CreateToken(tokendescriptor);
 
             return tokenhandler.WriteToken(token);
-
         }
     }
 }
