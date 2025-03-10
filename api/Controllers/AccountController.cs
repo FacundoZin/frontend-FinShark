@@ -33,6 +33,8 @@ namespace api.Controllers
 
             var User = await _Accountservice.LoginAsync(login);
 
+            if (!User.Success) return Unauthorized(User.errormessage);
+
             return Ok(User);
         }
 
@@ -46,6 +48,8 @@ namespace api.Controllers
             }
 
             var user = await _Accountservice.RegisterAsync(register);
+
+            if (!user.Success) return StatusCode(500, user.errormessage);
 
             return Ok(user);
         }

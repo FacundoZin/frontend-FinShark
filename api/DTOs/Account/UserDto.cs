@@ -11,7 +11,7 @@ namespace api.DTOs.Account
         public string UserName { get; set; }
         public string Email { get; set; }
         public string token { get; set; }
-        public string errormessage { get; set; }
+        public string errormessage { get; set; } = string.Empty;
         public bool Success => string.IsNullOrEmpty(errormessage);
     }
 }
