@@ -19,8 +19,8 @@ namespace api.Controllers
     public class StockController : ControllerBase
     {
 
-        private readonly Istock Stockrepository;
-        public StockController(Istock stockrepository)
+        private readonly IstockService Stockrepository;
+        public StockController(IstockService stockrepository)
         {
             Stockrepository = stockrepository;
         }

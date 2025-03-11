@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
+#pragma warning disable CA1814 // Prefer jagged arrays over multidimensional
+
 namespace api.Migrations
 {
     /// <inheritdoc />
-    public partial class identity : Migration
+    public partial class portfoliomanytomany : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -175,7 +177,7 @@ namespace api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "comments",
+                name: "Comments",
                 columns: table => new
                 {
                     ID = table.Column<int>(type: "int", nullable: false)
@@ -187,12 +189,45 @@ namespace api.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_comments", x => x.ID);
+                    table.PrimaryKey("PK_Comments", x => x.ID);
                     table.ForeignKey(
-                        name: "FK_comments_Stocks_StockID",
+                        name: "FK_Comments_Stocks_StockID",
                         column: x => x.StockID,
                         principalTable: "Stocks",
                         principalColumn: "ID");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Portfolios",
+                columns: table => new
+                {
+                    appuserID = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    stockid = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Portfolios", x => new { x.appuserID, x.stockid });
+                    table.ForeignKey(
+                        name: "FK_Portfolios_AspNetUsers_appuserID",
+                        column: x => x.appuserID,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_Portfolios_Stocks_stockid",
+                        column: x => x.stockid,
+                        principalTable: "Stocks",
+                        principalColumn: "ID",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "AspNetRoles",
+                columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
+                values: new object[,]
+                {
+                    { "06a20595-8787-4878-8001-09e16d0c53ca", null, "User", "USER" },
+                    { "57887424-a029-40c0-814d-bd1a4b295c7f", null, "Admin", "ADMIN" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -235,9 +270,14 @@ namespace api.Migrations
                 filter: "[NormalizedUserName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_comments_StockID",
-                table: "comments",
+                name: "IX_Comments_StockID",
+                table: "Comments",
                 column: "StockID");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Portfolios_stockid",
+                table: "Portfolios",
+                column: "stockid");
         }
 
         /// <inheritdoc />
@@ -259,7 +299,10 @@ namespace api.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "comments");
+                name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "Portfolios");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

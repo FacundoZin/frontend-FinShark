@@ -15,10 +15,10 @@ namespace api.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly Icomment _CommentRepository;
-        private readonly Istock _StockRepository;
+        private readonly IcommentService _CommentRepository;
+        private readonly IstockService _StockRepository;
 
-        public CommentController(Icomment commentrepository, Istock stockrepo)
+        public CommentController(IcommentService commentrepository, IstockService stockrepo)
         {
             _CommentRepository = commentrepository;
             _StockRepository = stockrepo;
