@@ -24,6 +24,7 @@ builder.Services.AddDbContext<ApplicationDBcontext>(options =>
 
 builder.Services.AddScoped<IstockService, StockRepository>();
 builder.Services.AddScoped<IcommentService, CommentRepository>();
+builder.Services.AddScoped<IPortfolioService, PortfolioRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
