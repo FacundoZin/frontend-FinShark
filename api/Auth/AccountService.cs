@@ -22,6 +22,11 @@ namespace api.Auth
             _Signinmanager = signIn;
         }
 
+        public async Task<AppUser> FindByname(string name)
+        {
+            var user = await _UserManager.FindByNameAsync(name);
+            return user;
+        }
 
         public async Task<UserDto> LoginAsync(LoginDto loginDto)
         {

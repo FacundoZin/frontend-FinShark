@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using api.DTOs.Account;
+using api.Models;
 
 namespace api.Interfaces
 {
@@ -10,5 +11,6 @@ namespace api.Interfaces
     {
         Task<UserDto> LoginAsync(LoginDto request);
         Task<UserDto> RegisterAsync(RegisterDto request);
+        Task<AppUser> FindByname(string name);
     }
 }

@@ -16,17 +16,17 @@ namespace api.Controllers
     [Route("api/portfolio")]
     public class PortfolioController : ControllerBase
     {
-        private readonly UserManager<AppUser> _usermanager;
         private readonly IPortfolioService _PortfolioRepo;
         private readonly IstockService _stockrepo;
+        private readonly IaccountService _AccountService;
 
 
-        public PortfolioController(UserManager<AppUser> userManager, IPortfolioService portfoliorepo,
+        public PortfolioController(IPortfolioService portfoliorepo, IaccountService accountservice,
         IstockService stockrepo)
         {
-            _usermanager = userManager;
             _PortfolioRepo = portfoliorepo;
             _stockrepo = stockrepo;
+            _AccountService = accountservice;
         }
 
         [HttpGet]
@@ -34,11 +34,17 @@ namespace api.Controllers
         public async Task<IActionResult> GetUserPortfolio()
         {
             var username = User.getUserName();
-            var appUser = await _usermanager.FindByNameAsync(username);
+            var user = await _AccountService.FindByname(username);
+            var portfolioresult = await _PortfolioRepo.GetUserPortfolio(user);
 
-            var userportfolio = _PortfolioRepo.GetUserPortfolio(appUser!);
-
-            return Ok(userportfolio);
+            if (portfolioresult.Exit == false)
+            {
+                return StatusCode(portfolioresult.Errorcode, portfolioresult.Errormessage);
+            }
+            else
+            {
+                return Ok(portfolioresult.Date);
+            }
         }
 
         [HttpPost]
@@ -46,34 +52,20 @@ namespace api.Controllers
         public async Task<IActionResult> AddToPortfolio(string symbol)
         {
             var username = User.getUserName();
-            var appUser = await _usermanager.FindByNameAsync(username);
-            var stock = _stockrepo.GetbySymbolAsync(symbol);
+            var user = await _AccountService.FindByname(username);
 
-            if (stock == null) return BadRequest("stock not found");
+            if (await _PortfolioRepo.ContainStock(symbol, user) == false) return BadRequest("Cannot add same stock to portfolio");
 
-            var Userportfolio = await _PortfolioRepo.GetUserPortfolio(appUser!);
+            var result = await _PortfolioRepo.AddToPortfolio(user, symbol);
 
-            if (Userportfolio.Any(p => p.Symbol.ToLower() == symbol.ToLower())) return BadRequest("cannot add same stock to portfolio");
-
-            var portfoliomodel = new Portfolio
+            if (!result.Exit)
             {
-                stockid = stock.Id,
-                appuserID = appUser.Id
-            };
-
-            await _PortfolioRepo.CreateAsync(portfoliomodel);
-
-            if (portfoliomodel == null)
-            {
-                return StatusCode(500, "could not add");
+                return StatusCode(result.Errorcode, result.Errormessage);
             }
             else
             {
-                return Created();
+                return Ok(result);
             }
-
-
-
         }
 
     }

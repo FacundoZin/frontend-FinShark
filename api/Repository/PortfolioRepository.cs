@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Common;
 using api.Data;
 using api.DTOs.Stock;
 using api.Interfaces;
@@ -14,26 +15,43 @@ namespace api.Repository
     public class PortfolioRepository : IPortfolioService
     {
         private ApplicationDBcontext _DBcontext;
+        private readonly UserManager<AppUser> _usermanager;
+        private readonly IstockService _stockrepo;
 
-        public PortfolioRepository(ApplicationDBcontext dBcontext)
+        public PortfolioRepository(ApplicationDBcontext dBcontext, UserManager<AppUser> userManager, IstockService stockservice)
         {
             _DBcontext = dBcontext;
+            _usermanager = userManager;
+            _stockrepo = stockservice;
         }
 
-        public async Task<Portfolio> CreateAsync(Portfolio portfolio)
+        public async Task<Result<List<Stock>>> AddToPortfolio(AppUser User, string symbol)
         {
+            var stock = await _stockrepo.GetbySymbolAsync(symbol);
 
+            if (stock == null) return Result<List<Stock>>.Error("Stock not found", 400);
 
-            await _DBcontext.portfolios.AddAsync(portfolio);
+            Portfolio added_item = new Portfolio
+            {
+                stockid = stock.ID,
+                appuserID = User.Id
+            };
+
+            await _DBcontext.portfolios.AddAsync(added_item);
             await _DBcontext.SaveChangesAsync();
 
-            return portfolio;
+            var portfolioresult = await GetUserPortfolio(User);
+
+            if (portfolioresult.Exit == false) return Result<List<Stock>>.Error(portfolioresult.Errormessage, portfolioresult.Errorcode);
+
+            var portfolio = portfolioresult.Date;
+
+            return Result<List<Stock>>.Exito(portfolio);
         }
 
-        public async Task<List<Stock>> GetUserPortfolio(AppUser appUser)
+        public async Task<Result<List<Stock>>> GetUserPortfolio(AppUser User)
         {
-
-            return await _DBcontext.portfolios.Where(p => p.appuserID == appUser.Id)
+            var portfolio = await _DBcontext.portfolios.Where(p => p.appuserID == User!.Id)
             .Select(S => new Stock
             {
                 ID = S.stockid,
@@ -44,8 +62,28 @@ namespace api.Repository
                 Industry = S.stock.Industry,
                 MarketCap = S.stock.MarketCap
             }).ToListAsync();
+
+            if (portfolio == null) return Result<List<Stock>>.Error("Portfolio not found", 400);
+
+            return Result<List<Stock>>.Exito(portfolio);
         }
 
+        public async Task<bool> ContainStock(string symbol, AppUser User)
+        {
+            var portfolioresult = await GetUserPortfolio(User);
 
+            if (portfolioresult.Exit == false) return false;
+
+            var portfolio = portfolioresult.Date;
+
+            if (portfolio.Any(p => p.Symbol.ToLower() == symbol.ToLower()))
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
     }
 }
