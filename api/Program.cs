@@ -1,3 +1,4 @@
+using api.Auth;
 using api.Data;
 using api.Interfaces;
 using api.Models;
@@ -26,6 +27,7 @@ builder.Services.AddScoped<IstockService, StockRepository>();
 builder.Services.AddScoped<IcommentService, CommentRepository>();
 builder.Services.AddScoped<IPortfolioService, PortfolioRepository>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IaccountService, AccountService>();
 
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {

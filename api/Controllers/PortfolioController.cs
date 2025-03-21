@@ -17,15 +17,11 @@ namespace api.Controllers
     public class PortfolioController : ControllerBase
     {
         private readonly IPortfolioService _PortfolioRepo;
-        private readonly IstockService _stockrepo;
         private readonly IaccountService _AccountService;
 
-
-        public PortfolioController(IPortfolioService portfoliorepo, IaccountService accountservice,
-        IstockService stockrepo)
+        public PortfolioController(IPortfolioService portfoliorepo, IaccountService accountservice)
         {
             _PortfolioRepo = portfoliorepo;
-            _stockrepo = stockrepo;
             _AccountService = accountservice;
         }
 
@@ -35,6 +31,7 @@ namespace api.Controllers
         {
             var username = User.getUserName();
             var user = await _AccountService.FindByname(username);
+
             var portfolioresult = await _PortfolioRepo.GetUserPortfolio(user);
 
             if (portfolioresult.Exit == false)
@@ -43,20 +40,20 @@ namespace api.Controllers
             }
             else
             {
-                return Ok(portfolioresult.Date);
+                return Ok(portfolioresult.Data);
             }
         }
 
-        [HttpPost]
+        [HttpPut]
         [Authorize]
-        public async Task<IActionResult> AddToPortfolio(string symbol)
+        public async Task<IActionResult> AddStock(string symbol)
         {
             var username = User.getUserName();
             var user = await _AccountService.FindByname(username);
 
-            if (await _PortfolioRepo.ContainStock(symbol, user) == false) return BadRequest("Cannot add same stock to portfolio");
+            if (await _PortfolioRepo.ContainStock(symbol, user) == true) return BadRequest("Cannot add same stock to portfolio");
 
-            var result = await _PortfolioRepo.AddToPortfolio(user, symbol);
+            var result = await _PortfolioRepo.AddStockToPortfolio(user, symbol);
 
             if (!result.Exit)
             {
@@ -64,8 +61,27 @@ namespace api.Controllers
             }
             else
             {
-                return Ok(result);
+                return Ok(result.Data);
             }
+        }
+
+        [HttpDelete]
+        [Authorize]
+        public async Task<IActionResult> DeleteStock(string symbol)
+        {
+            var username = User.getUserName();
+            var appuser = await _AccountService.FindByname(username);
+
+            if (await _PortfolioRepo.ContainStock(symbol, appuser) == false) return BadRequest("the stock is not on the portfolio");
+
+            var result = await _PortfolioRepo.DeleteStock(appuser, symbol);
+
+            if (result.Exit == false)
+            {
+                return StatusCode(result.Errorcode, result.Errormessage);
+            }
+
+            return Ok();
         }
 
     }
