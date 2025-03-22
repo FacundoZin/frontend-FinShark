@@ -24,7 +24,6 @@ namespace api.mappers
                 MarketCap = StockModel.MarketCap,
                 comments = StockModel.Comments.Select(c => c.toCommentdto()).ToList()
             };
-
         }
 
         public static Stock ToCreateStockDto(this CreateStockDto createStockDto)

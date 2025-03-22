@@ -34,8 +34,8 @@ namespace api.Repository
 
             Portfolio added_item = new Portfolio
             {
-                stockid = stock.ID,
-                appuserID = User.Id
+                StockID = stock.ID,
+                AppUserID = User.Id
             };
 
             await _DBcontext.portfolios.AddAsync(added_item);
@@ -52,16 +52,16 @@ namespace api.Repository
 
         public async Task<Result<List<Stock>>> GetUserPortfolio(AppUser User)
         {
-            var portfolio = await _DBcontext.portfolios.Where(p => p.appuserID == User!.Id)
+            var portfolio = await _DBcontext.portfolios.Where(p => p.AppUserID == User!.Id)
             .Select(S => new Stock
             {
-                ID = S.stockid,
-                Symbol = S.stock.Symbol,
-                Companyname = S.stock.Companyname,
-                Purchase = S.stock.Purchase,
-                LastDiv = S.stock.LastDiv,
-                Industry = S.stock.Industry,
-                MarketCap = S.stock.MarketCap
+                ID = S.StockID,
+                Symbol = S.Stock.Symbol,
+                Companyname = S.Stock.Companyname,
+                Purchase = S.Stock.Purchase,
+                LastDiv = S.Stock.LastDiv,
+                Industry = S.Stock.Industry,
+                MarketCap = S.Stock.MarketCap
             }).ToListAsync();
 
             if (portfolio == null) return Result<List<Stock>>.Error("Portfolio not found", 400);
@@ -77,8 +77,8 @@ namespace api.Repository
 
             Portfolio delete_item = new Portfolio
             {
-                stockid = stock.ID,
-                appuserID = user.Id
+                StockID = stock.ID,
+                AppUserID = user.Id
             };
 
             _DBcontext.portfolios.Remove(delete_item);

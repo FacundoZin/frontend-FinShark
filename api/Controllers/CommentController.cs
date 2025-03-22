@@ -4,6 +4,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using api.DTOs.Comment;
+using api.Extensions;
 using api.Interfaces;
 using api.mappers;
 using Microsoft.AspNetCore.Mvc;
@@ -16,18 +17,19 @@ namespace api.Controllers
     public class CommentController : ControllerBase
     {
         private readonly IcommentService _CommentRepository;
+        private readonly IaccountService _Accountservice;
         private readonly IstockService _StockRepository;
 
-        public CommentController(IcommentService commentrepository, IstockService stockrepo)
+        public CommentController(IcommentService commentrepository,IaccountService accountservice ,IstockService stockrepo)
         {
             _CommentRepository = commentrepository;
+            _Accountservice = accountservice;
             _StockRepository = stockrepo;
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-
             var comments = await _CommentRepository.GetAllasync();
 
             var commentdto = comments.Select(s => s.toCommentdto());
@@ -61,13 +63,16 @@ namespace api.Controllers
                 return BadRequest("stock does not exist");
             }
 
-            var comment = createCommentDto.toCreateCommentdto(stockid);
+            var username = User.getUserName();
+            var user = await _Accountservice.FindByname(username);
+
+            var comment = createCommentDto.toCreateCommentdto(stockid,user.Id);
 
             await _CommentRepository.Createasync(comment);
 
             return CreatedAtAction(nameof(Getbyid), new { id = comment.ID }, comment.toCommentdto());
-
         }
+
 
         [HttpDelete]
         [Route("{id:int}")]
