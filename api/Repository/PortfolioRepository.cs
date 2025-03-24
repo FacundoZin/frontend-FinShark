@@ -18,17 +18,36 @@ namespace api.Repository
         private ApplicationDBcontext _DBcontext;
         private readonly UserManager<AppUser> _usermanager;
         private readonly IstockService _stockrepo;
+        private readonly IFMPService _FMPservice;
 
-        public PortfolioRepository(ApplicationDBcontext dBcontext, UserManager<AppUser> userManager, IstockService stockservice)
+        public PortfolioRepository(ApplicationDBcontext dBcontext, UserManager<AppUser> userManager, IstockService stockservice,
+        IFMPService fMPService)
         {
             _DBcontext = dBcontext;
             _usermanager = userManager;
             _stockrepo = stockservice;
+            _FMPservice = fMPService;
         }
 
         public async Task<Result<List<Stock>>> AddStockToPortfolio(AppUser User, string symbol)
         {
             var stock = await _stockrepo.GetbySymbolAsync(symbol);
+
+            if (stock == null)
+            {
+                var search_in_fmp = await _FMPservice.FindBySymbolAsync(symbol);
+
+                if (search_in_fmp.Exit == false)
+                {
+                    return Result<List<Stock>>.Error(search_in_fmp.Errormessage, search_in_fmp.Errorcode);
+                }
+                else
+                {
+                    await _stockrepo.Createasync(search_in_fmp.Data);
+                    stock = await _stockrepo.GetbySymbolAsync(symbol);
+                }
+            }
+
 
             if (stock == null) return Result<List<Stock>>.Error("Stock not found", 400);
 

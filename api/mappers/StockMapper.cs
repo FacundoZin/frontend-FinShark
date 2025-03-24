@@ -26,7 +26,7 @@ namespace api.mappers
             };
         }
 
-        public static Stock ToCreateStockDto(this CreateStockDto createStockDto)
+        public static Stock ToStockfromCreateDto(this CreateStockDto createStockDto)
         {
             return new Stock
             {
@@ -36,6 +36,19 @@ namespace api.mappers
                 LastDiv = createStockDto.LastDiv,
                 Industry = createStockDto.Industry,
                 MarketCap = createStockDto.MarketCap
+            };
+        }
+
+        public static Stock TOstockFromFMP(this FMPstockDto _FMPstockDto)
+        {
+            return new Stock
+            {
+                Symbol = _FMPstockDto.symbol,
+                Companyname = _FMPstockDto.companyName,
+                Purchase = (decimal)_FMPstockDto.price,
+                LastDiv = (decimal)_FMPstockDto.lastDiv,
+                Industry = _FMPstockDto.industry,
+                MarketCap = _FMPstockDto.mktCap
             };
         }
 

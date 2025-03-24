@@ -19,12 +19,15 @@ namespace api.Controllers
         private readonly IcommentService _CommentRepository;
         private readonly IaccountService _Accountservice;
         private readonly IstockService _StockRepository;
+        private readonly IFMPService _FMPservice;
 
-        public CommentController(IcommentService commentrepository,IaccountService accountservice ,IstockService stockrepo)
+        public CommentController(IcommentService commentrepository, IaccountService accountservice, IstockService stockrepo,
+        IFMPService fMPService)
         {
             _CommentRepository = commentrepository;
             _Accountservice = accountservice;
             _StockRepository = stockrepo;
+            _FMPservice = fMPService;
         }
 
         [HttpGet]
@@ -51,22 +54,34 @@ namespace api.Controllers
         }
 
         [HttpPost("{stockid:int}")]
-        public async Task<IActionResult> Create([FromRoute] int stockid, CreateCommentDto createCommentDto)
+        public async Task<IActionResult> Create([FromRoute] string symbol, CreateCommentDto createCommentDto)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
 
-            if (false == await _StockRepository.StockExist(stockid))
+            var stock = await _StockRepository.GetbySymbolAsync(symbol);
+
+            if (stock == null)
             {
-                return BadRequest("stock does not exist");
+                var search_in_fmp = await _FMPservice.FindBySymbolAsync(symbol);
+
+                if (search_in_fmp.Exit == false)
+                {
+                    return StatusCode(search_in_fmp.Errorcode, search_in_fmp.Errormessage);
+                }
+                else
+                {
+                    await _StockRepository.Createasync(search_in_fmp.Data);
+                    stock = await _StockRepository.GetbySymbolAsync(symbol);
+                }
             }
 
             var username = User.getUserName();
             var user = await _Accountservice.FindByname(username);
 
-            var comment = createCommentDto.toCreateCommentdto(stockid,user.Id);
+            var comment = createCommentDto.toCreateCommentdto(stock.ID, user.Id);
 
             await _CommentRepository.Createasync(comment);
 
