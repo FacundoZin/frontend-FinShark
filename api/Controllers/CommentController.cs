@@ -5,8 +5,10 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using api.DTOs.Comment;
 using api.Extensions;
+using api.Helpers;
 using api.Interfaces;
 using api.mappers;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
 
@@ -31,9 +33,10 @@ namespace api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [Authorize]
+        public async Task<IActionResult> GetAll(CommentQueryObject commentQueryObject)
         {
-            var comments = await _CommentRepository.GetAllasync();
+            var comments = await _CommentRepository.GetAllasync(commentQueryObject);
 
             var commentdto = comments.Select(s => s.toCommentdto());
 
