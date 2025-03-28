@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
-    public class StockRepository : IstockService
+    public class StockRepository : IStockRepository
     {
         private readonly ApplicationDBcontext _context;
         public StockRepository(ApplicationDBcontext context)
@@ -41,39 +41,10 @@ namespace api.Repository
             return stock;
         }
 
-        public async Task<List<Stock>> GetAllasync(QueryObject query)
+        public IQueryable<Stock> GetAllStocks()
         {
             var Stocks = _context.Stocks.Include(c => c.Comments).ThenInclude(a => a.AppUser).AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(query.CompanyName))
-            {
-                Stocks = Stocks.Where(s => s.Companyname.Contains(query.CompanyName));
-            }
-
-            if (!string.IsNullOrWhiteSpace(query.Symbol))
-            {
-                Stocks = Stocks.Where(s => s.Symbol.Contains(query.Symbol));
-            }
-
-            if (!string.IsNullOrWhiteSpace(query.SortBy))
-            {
-                if (query.SortBy.Equals("symbol", StringComparison.OrdinalIgnoreCase))
-                {
-                    if (query.IsDecsending == true)
-                    {
-                        Stocks = Stocks.OrderByDescending(s => s.Symbol);
-                    }
-                    else
-                    {
-                        Stocks = Stocks.OrderBy(s => s.Symbol);
-                    }
-                }
-            }
-
-
-            var skipNumber = (query.PageNumber - 1) * query.PageSize;
-
-            return await Stocks.Skip(skipNumber).Take(query.PageSize).ToListAsync();
+            return Stocks;
         }
 
         public async Task<Stock?> Getbyidasync(int id)

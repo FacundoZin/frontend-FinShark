@@ -9,9 +9,9 @@ using api.Models;
 namespace api.Interfaces
 {
 
-    public interface IstockService
+    public interface IStockRepository
     {
-        Task<List<Stock>> GetAllasync(QueryObject query);
+        IQueryable<Stock> GetAllStocks();
         Task<Stock?> Getbyidasync(int id);
         Task<Stock?> GetbySymbolAsync(string symbol);
         Task<Stock> Createasync(Stock stock);
