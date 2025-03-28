@@ -43,8 +43,8 @@ namespace api.Repository
 
         public IQueryable<Stock> GetAllStocks()
         {
-            var Stocks = _context.Stocks.Include(c => c.Comments).ThenInclude(a => a.AppUser).AsQueryable();
-            return Stocks;
+            var consult = _context.Stocks.Include(c => c.Comments).ThenInclude(a => a.AppUser).AsQueryable();
+            return consult;
         }
 
         public async Task<Stock?> Getbyidasync(int id)

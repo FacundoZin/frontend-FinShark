@@ -8,6 +8,7 @@ using api.Helpers;
 using api.Interfaces;
 using api.mappers;
 using api.Models;
+using api.Services.StockService;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,36 +20,34 @@ namespace api.Controllers
     public class StockController : ControllerBase
     {
 
-        private readonly IstockService Stockrepository;
-        public StockController(IstockService stockrepository)
+        private readonly IStockService _StockService;
+        public StockController(IStockService stockService)
         {
-            Stockrepository = stockrepository;
+            _StockService = stockService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetAll([FromQuery] QueryObject query)
+        public async Task<IActionResult> GetAll([FromQuery] StockQueryObject query)
         {
 
-            var stocks = await Stockrepository.GetAllasync(query);
+            var stocks = await _StockService.GetAllStocksAsync(query);
 
-            var stockdto = stocks.Select(s => s.toStockDto()).ToList();
-
-            return Ok(stockdto);
+            return Ok(stocks);
         }
 
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetByID([FromRoute] int id)
         {
-            var stock = await Stockrepository.Getbyidasync(id);
+            var Result = await _StockService.GetStockByIdAsync(id);
 
-            if (stock == null)
+            if (Result.Exit == true)
             {
-                return NotFound();
+                return Ok(Result.Data);
             }
-
-            return Ok(stock.toStockDto());
-
-
+            else
+            {
+                return StatusCode(Result.Errorcode, Result.Errormessage);
+            }
         }
 
         [HttpPost]
