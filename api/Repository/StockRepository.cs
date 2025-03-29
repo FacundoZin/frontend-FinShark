@@ -20,10 +20,16 @@ namespace api.Repository
             _context = context;
         }
 
-        public async Task<Stock> Createasync(Stock stock)
+        public async Task<Stock?> Createasync(Stock stock)
         {
             await _context.Stocks.AddAsync(stock);
             await _context.SaveChangesAsync();
+
+            if (stock.ID == 0)
+            {
+                return null;
+
+            }
             return stock;
         }
 
@@ -38,6 +44,7 @@ namespace api.Repository
 
             _context.Stocks.Remove(stock);
             await _context.SaveChangesAsync();
+
             return stock;
         }
 

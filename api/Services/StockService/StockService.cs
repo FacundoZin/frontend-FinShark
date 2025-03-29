@@ -21,6 +21,29 @@ namespace api.Services.StockService
             _StockRepo = stockRepository;
         }
 
+        public async Task<Result<Stock>> CreateStockAsync(CreateStockDto createStock)
+        {
+            var stock = await _StockRepo.Createasync(createStock.ToStockfromCreateDto());
+
+            if (stock == null)
+            {
+                return Result<Stock>.Error("something went wrong", 500);
+            }
+            else return Result<Stock>.Exito(stock);
+        }
+
+        public async Task<Result<Stock?>> DeleteStockAsync(int id)
+        {
+            var stock = await _StockRepo.Deleteasync(id);
+
+            if (stock == null)
+            {
+                return Result<Stock?>.Error("stock no found", 404);
+            }
+
+            return Result<Stock?>.Exito(null);
+        }
+
         public async Task<List<StockDto?>> GetAllStocksAsync(StockQueryObject queryObject)
         {
             var Stocks = _StockRepo.GetAllStocks();
@@ -65,6 +88,15 @@ namespace api.Services.StockService
             {
                 return Result<StockDto?>.Exito(stock.toStockDto());
             }
+        }
+
+        public async Task<Result<StockDto?>> UpdateStockAsync(int id, UpdateStockDto updateStockDto)
+        {
+            var stock = await _StockRepo.Updateasync(id, updateStockDto);
+
+            if (stock == null) return Result<StockDto?>.Error("stock not found", 404);
+
+            return Result<StockDto?>.Exito(stock.toStockDto());
         }
     }
 }

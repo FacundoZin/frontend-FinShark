@@ -14,7 +14,7 @@ namespace api.Interfaces
         IQueryable<Stock> GetAllStocks();
         Task<Stock?> Getbyidasync(int id);
         Task<Stock?> GetbySymbolAsync(string symbol);
-        Task<Stock> Createasync(Stock stock);
+        Task<Stock?> Createasync(Stock stock);
         Task<Stock?> Updateasync(int id, UpdateStockDto updatedstock);
         Task<Stock?> Deleteasync(int id);
         Task<bool> StockExist(int id);

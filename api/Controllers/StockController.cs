@@ -58,40 +58,48 @@ namespace api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var stock = createStockDto.ToStockfromCreateDto();
-            await Stockrepository.Createasync(stock);
-            return CreatedAtAction(nameof(GetByID), new { id = stock.ID }, stock.toStockDto());
+            var stock = await _StockService.CreateStockAsync(createStockDto);
+
+            if (stock.Exit == false)
+            {
+                return StatusCode(stock.Errorcode, stock.Errormessage);
+            }
+            return CreatedAtAction(nameof(GetByID), new { id = stock.Data.ID }, stock.Data.toStockDto());
         }
 
         [HttpPut]
         [Route("{id:int}")]
         public async Task<IActionResult> Update([FromRoute] int id, [FromBody] UpdateStockDto updatedStock)
         {
-            if (!ModelState.IsValid)
+            if (!ModelState.IsValid || id <= 0)
             {
                 return BadRequest(ModelState);
             }
 
-            var stock = await Stockrepository.Updateasync(id, updatedStock);
+            var stock = await _StockService.UpdateStockAsync(id, updatedStock);
 
-            if (stock == null)
+            if (stock.Exit == false)
             {
-                return NotFound();
+                StatusCode(stock.Errorcode, stock.Errormessage);
             }
 
-            return Ok(stock.toStockDto());
+            return Ok(stock.Data);
         }
 
         [HttpDelete]
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-
-            var stock = await Stockrepository.Deleteasync(id);
-
-            if (stock == null)
+            if (id <= 0)
             {
-                return NotFound();
+                return BadRequest("invalid ID");
+            }
+
+            var stock = await _StockService.DeleteStockAsync(id);
+
+            if (stock.Exit == false)
+            {
+                return StatusCode(stock.Errorcode, stock.Errormessage);
             }
 
             return NoContent();

@@ -13,5 +13,8 @@ namespace api.Services.StockService
     {
         Task<List<StockDto?>> GetAllStocksAsync(StockQueryObject queryObject);
         Task<Result<StockDto?>> GetStockByIdAsync(int id);
+        Task<Result<Stock>> CreateStockAsync(CreateStockDto createStock);
+        Task<Result<Stock?>> DeleteStockAsync(int id);
+        Task<Result<StockDto?>> UpdateStockAsync(int id, UpdateStockDto updateStockDto);
     }
 }
