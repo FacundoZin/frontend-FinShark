@@ -45,9 +45,13 @@ namespace api.Repository
             return _Context.comments.Include(a => a.AppUser).AsQueryable();
         }
 
-        public async Task<Comment> Getbyid(int id)
+        public async Task<Comment?> Getbyid(int id)
         {
-            return await _Context.comments.Include(a => a.AppUser).FirstOrDefaultAsync(c => c.ID == id);
+            var comment = await _Context.comments.Include(a => a.AppUser).FirstOrDefaultAsync(c => c.ID == id);
+
+            if (comment == null) return null;
+
+            return comment;
         }
     }
 }

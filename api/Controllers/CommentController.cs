@@ -48,14 +48,14 @@ namespace api.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> Getbyid([FromRoute] int id)
         {
-            var comment = await _CommentRepository.Getbyid(id);
+            var comment = await _CommentService.GetCommentByIdAsync(id);
 
-            if (comment == null)
+            if (comment.Exit == false)
             {
-                return NotFound();
+                return StatusCode(comment.Errorcode, comment.Errormessage);
             }
 
-            return Ok(comment.toCommentdto());
+            return Ok(comment.Data);
         }
 
         [HttpPost("{stockid:int}")]

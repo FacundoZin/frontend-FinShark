@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using api.Common;
 using api.DTOs.Comment;
 using api.Helpers;
 using api.Interfaces;
@@ -41,6 +42,18 @@ namespace api.Services.CommentService
             var comments = await consult.ToListAsync();
 
             return comments.Select(c => c.toCommentdto()).ToList();
+        }
+
+        public async Task<Result<CommentDto>> GetCommentByIdAsync(int id)
+        {
+            var comment = await _CommentRepo.Getbyid(id);
+
+            if (comment == null)
+            {
+                return Result<CommentDto>.Error("comment not found", 404);
+            }
+
+            return Result<CommentDto>.Exito(comment.toCommentdto());
         }
     }
 }
