@@ -68,7 +68,14 @@ namespace api.Repository
 
         public async Task<Stock?> GetbySymbolAsync(string symbol)
         {
-            return await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
+            var stock = await _context.Stocks.FirstOrDefaultAsync(s => s.Symbol == symbol);
+
+            if (stock == null)
+            {
+                return null;
+            }
+
+            return stock;
         }
 
         public async Task<bool> StockExist(int id)

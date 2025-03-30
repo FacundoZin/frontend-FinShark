@@ -11,7 +11,7 @@ namespace api.Interfaces
     {
         IQueryable<Comment> GetAll();
         Task<Comment?> Getbyid(int id);
-        Task<Comment> Createasync(Comment comment);
+        Task<Comment?> Createasync(Comment comment);
         Task<Comment?> Deleteasync(int id);
     }
 }

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using api.Common;
 using api.DTOs.Comment;
@@ -16,10 +17,50 @@ namespace api.Services.CommentService
     public class CommentService : ICommentService
     {
         private readonly ICommentRepository _CommentRepo;
+        private readonly IStockRepository _Stockrepo;
+        private readonly IaccountService _AccountService;
+        private readonly IFMPService _FMPservice;
 
-        public CommentService(ICommentRepository commentrepo)
+        public CommentService(ICommentRepository commentrepo, IStockRepository stockRepository,
+        IaccountService accountService, IFMPService fMPService)
         {
             _CommentRepo = commentrepo;
+            _Stockrepo = stockRepository;
+            _AccountService = accountService;
+            _FMPservice = fMPService;
+        }
+
+        public async Task<Result<CommentDto>> CreateCommentAsync(CreateCommentDto createCommentDto, string symbol, string username)
+        {
+            var stockTask = _Stockrepo.GetbySymbolAsync(symbol);
+            var userTask = _AccountService.FindByname(username);
+
+            await Task.WhenAll(stockTask, userTask);
+
+            var stock = await stockTask;
+            var user = await userTask;
+
+            if (stock == null)
+            {
+
+                var search_in_fmp = await _FMPservice.FindBySymbolAsync(symbol);
+
+                if (search_in_fmp.Exit == false)
+                {
+                    return Result<CommentDto>.Error("stock not found", 404);
+                }
+                else
+                {
+                    await _Stockrepo.Createasync(search_in_fmp.Data);
+                    stock = await _Stockrepo.GetbySymbolAsync(symbol);
+                }
+            }
+
+            if (user == null) return Result<CommentDto>.Error("user not found", 404);
+
+            var commentmodel = await _CommentRepo.Createasync(createCommentDto.tocommentfromCreateCommentdto(stock!.ID, user!.Id));
+
+            return Result<CommentDto>.Exito(commentmodel!.toCommentdto());
         }
 
         public async Task<List<CommentDto>> GetAllCommentsAsync(CommentQueryObject commentQueryObject)

@@ -66,31 +66,12 @@ namespace api.Controllers
                 return BadRequest(ModelState);
             }
 
-            var stock = await _StockRepository.GetbySymbolAsync(symbol);
-
-            if (stock == null)
-            {
-                var search_in_fmp = await _FMPservice.FindBySymbolAsync(symbol);
-
-                if (search_in_fmp.Exit == false)
-                {
-                    return StatusCode(search_in_fmp.Errorcode, search_in_fmp.Errormessage);
-                }
-                else
-                {
-                    await _StockRepository.Createasync(search_in_fmp.Data);
-                    stock = await _StockRepository.GetbySymbolAsync(symbol);
-                }
-            }
-
             var username = User.getUserName();
-            var user = await _Accountservice.FindByname(username);
+            var result = await _CommentService.CreateCommentAsync(createCommentDto, symbol, username);
 
-            var comment = createCommentDto.toCreateCommentdto(stock.ID, user.Id);
+            if (result.Exit == false) return StatusCode(result.Errorcode, result.Errormessage);
 
-            await _CommentRepository.Createasync(comment);
-
-            return CreatedAtAction(nameof(Getbyid), new { id = comment.ID }, comment.toCommentdto());
+            return CreatedAtAction(nameof(Getbyid), new { id = result.Data.ID }, result.Data);
         }
 
 

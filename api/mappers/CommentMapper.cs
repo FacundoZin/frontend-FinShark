@@ -23,7 +23,7 @@ namespace api.mappers
             };
         }
 
-        public static Comment toCreateCommentdto(this CreateCommentDto createCommentDto, int stockid, string UserID)
+        public static Comment tocommentfromCreateCommentdto(this CreateCommentDto createCommentDto, int stockid, string UserID)
         {
             return new Comment
             {

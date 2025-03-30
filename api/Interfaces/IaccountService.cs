@@ -11,6 +11,6 @@ namespace api.Interfaces
     {
         Task<UserDto> LoginAsync(LoginDto request);
         Task<UserDto> RegisterAsync(RegisterDto request);
-        Task<AppUser> FindByname(string name);
+        Task<AppUser?> FindByname(string name);
     }
 }

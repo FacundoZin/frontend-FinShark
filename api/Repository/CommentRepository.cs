@@ -18,7 +18,7 @@ namespace api.Repository
             _Context = dBcontext;
         }
 
-        public async Task<Comment> Createasync(Comment comment)
+        public async Task<Comment?> Createasync(Comment comment)
         {
             await _Context.comments.AddAsync(comment);
             await _Context.SaveChangesAsync();
