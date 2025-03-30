@@ -7,9 +7,9 @@ using api.Models;
 
 namespace api.Interfaces
 {
-    public interface IcommentService
+    public interface ICommentRepository
     {
-        Task<List<Comment>> GetAllasync(CommentQueryObject commentQueryObject);
+        IQueryable<Comment> GetAll();
         Task<Comment> Getbyid(int id);
         Task<Comment> Createasync(Comment comment);
         Task<Comment?> Deleteasync(int id);

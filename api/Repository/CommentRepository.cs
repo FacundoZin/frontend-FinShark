@@ -10,7 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
-    public class CommentRepository : IcommentService
+    public class CommentRepository : ICommentRepository
     {
         private readonly ApplicationDBcontext _Context;
         public CommentRepository(ApplicationDBcontext dBcontext)
@@ -40,23 +40,9 @@ namespace api.Repository
             return comment;
         }
 
-        public async Task<List<Comment>> GetAllasync(CommentQueryObject commentQueryObject)
+        public IQueryable<Comment> GetAll()
         {
-            var comment = _Context.comments.Include(a => a.AppUser).AsQueryable();
-
-            if (!string.IsNullOrWhiteSpace(commentQueryObject.Symbol))
-            {
-                comment = comment.Where(s => s.Stock.Symbol == commentQueryObject.Symbol);
-            }
-            if (commentQueryObject.IsDecsending == true)
-            {
-                comment = comment.OrderByDescending(c => c.CreatedOn);
-            }
-            else
-            {
-                comment = comment.OrderBy(c => c.CreatedOn);
-            }
-            return await comment.ToListAsync();
+            return _Context.comments.Include(a => a.AppUser).AsQueryable();
         }
 
         public async Task<Comment> Getbyid(int id)

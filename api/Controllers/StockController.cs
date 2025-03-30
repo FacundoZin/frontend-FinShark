@@ -9,6 +9,7 @@ using api.Interfaces;
 using api.mappers;
 using api.Models;
 using api.Services.StockService;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,9 +28,9 @@ namespace api.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public async Task<IActionResult> GetAll([FromQuery] StockQueryObject query)
         {
-
             var stocks = await _StockService.GetAllStocksAsync(query);
 
             return Ok(stocks);

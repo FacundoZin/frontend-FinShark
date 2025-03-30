@@ -8,6 +8,8 @@ using api.Extensions;
 using api.Helpers;
 using api.Interfaces;
 using api.mappers;
+using api.Models;
+using api.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore.Metadata;
@@ -18,14 +20,16 @@ namespace api.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly IcommentService _CommentRepository;
+        private readonly ICommentRepository _CommentRepository;
+        private readonly ICommentService _CommentService;
         private readonly IaccountService _Accountservice;
-        private readonly IstockService _StockRepository;
+        private readonly IStockRepository _StockRepository;
         private readonly IFMPService _FMPservice;
 
-        public CommentController(IcommentService commentrepository, IaccountService accountservice, IstockService stockrepo,
+        public CommentController(ICommentService commentService, ICommentRepository commentrepository, IaccountService accountservice, IStockRepository stockrepo,
         IFMPService fMPService)
         {
+            _CommentService = commentService;
             _CommentRepository = commentrepository;
             _Accountservice = accountservice;
             _StockRepository = stockrepo;
@@ -34,13 +38,11 @@ namespace api.Controllers
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetAll(CommentQueryObject commentQueryObject)
+        public async Task<IActionResult> GetAll([FromQuery] CommentQueryObject commentQueryObject)
         {
-            var comments = await _CommentRepository.GetAllasync(commentQueryObject);
+            var comment = await _CommentService.GetAllCommentsAsync(commentQueryObject);
 
-            var commentdto = comments.Select(s => s.toCommentdto());
-
-            return Ok(commentdto);
+            return Ok(comment);
         }
 
         [HttpGet("{id:int}")]
