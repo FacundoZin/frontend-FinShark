@@ -63,6 +63,12 @@ namespace api.Services.CommentService
             return Result<CommentDto>.Exito(commentmodel!.toCommentdto());
         }
 
+        public async Task<Result<bool>> DeleteCommentAsync(int id)
+        {
+            if (await _CommentRepo.Deleteasync(id) == false) return Result<bool>.Error("stock not found", 400);
+            return Result<bool>.Exito(true);
+        }
+
         public async Task<List<CommentDto>> GetAllCommentsAsync(CommentQueryObject commentQueryObject)
         {
             var consult = _CommentRepo.GetAll();

@@ -15,6 +15,7 @@ namespace api.Services
         Task<List<CommentDto>> GetAllCommentsAsync(CommentQueryObject commentQueryObject);
         Task<Result<CommentDto>> GetCommentByIdAsync(int id);
         Task<Result<CommentDto>> CreateCommentAsync(CreateCommentDto createCommentDto, string symbol, string username);
+        Task<Result<bool>> DeleteCommentAsync(int id);
 
     }
 }

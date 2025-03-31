@@ -20,20 +20,14 @@ namespace api.Controllers
     [ApiController]
     public class CommentController : ControllerBase
     {
-        private readonly ICommentRepository _CommentRepository;
+
         private readonly ICommentService _CommentService;
         private readonly IaccountService _Accountservice;
-        private readonly IStockRepository _StockRepository;
-        private readonly IFMPService _FMPservice;
 
-        public CommentController(ICommentService commentService, ICommentRepository commentrepository, IaccountService accountservice, IStockRepository stockrepo,
-        IFMPService fMPService)
+        public CommentController(ICommentService commentService, IaccountService accountservice)
         {
             _CommentService = commentService;
-            _CommentRepository = commentrepository;
             _Accountservice = accountservice;
-            _StockRepository = stockrepo;
-            _FMPservice = fMPService;
         }
 
         [HttpGet]
@@ -79,12 +73,9 @@ namespace api.Controllers
         [Route("{id:int}")]
         public async Task<IActionResult> Delete([FromRoute] int id)
         {
-            var comment = await _CommentRepository.Deleteasync(id);
+            var result = await _CommentService.DeleteCommentAsync(id);
 
-            if (comment == null)
-            {
-                return NotFound();
-            }
+            if (result.Exit == false) return StatusCode(result.Errorcode, result.Errormessage);
 
             return NoContent();
         }
