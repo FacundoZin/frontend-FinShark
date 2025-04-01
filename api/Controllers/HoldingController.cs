@@ -45,20 +45,11 @@ namespace api.Controllers
         public async Task<IActionResult> AddStock(string symbol)
         {
             var username = User.getUserName();
-            var user = await _AccountService.FindByname(username);
+            var result = await _HoldingService.AddStock(username, symbol);
 
-            if (await _PortfolioRepo.ContainStock(symbol, user) == true) return BadRequest("Cannot add same stock to portfolio");
+            if (result.Exit == false) return StatusCode(result.Errorcode, result.Errormessage);
 
-            var result = await _PortfolioRepo.AddStockToPortfolio(user, symbol);
-
-            if (!result.Exit)
-            {
-                return StatusCode(result.Errorcode, result.Errormessage);
-            }
-            else
-            {
-                return Ok(result.Data);
-            }
+            return Ok(result.Data);
         }
 
         [HttpDelete]

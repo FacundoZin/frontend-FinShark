@@ -29,44 +29,27 @@ namespace api.Repository
             _FMPservice = fMPService;
         }
 
-        public async Task<Result<List<Stock>>> AddStockToPortfolio(AppUser User, string symbol)
+        public async Task<bool> AddStockToHolding(AppUser User, Stock stock)
         {
-            var stock = await _stockrepo.GetbySymbolAsync(symbol);
 
-            if (stock == null)
+            try
             {
-                var search_in_fmp = await _FMPservice.FindBySymbolAsync(symbol);
+                Holding added_item = new Holding
+                {
+                    StockID = stock.ID,
+                    AppUserID = User.Id
+                };
 
-                if (search_in_fmp.Exit == false)
-                {
-                    return Result<List<Stock>>.Error(search_in_fmp.Errormessage, search_in_fmp.Errorcode);
-                }
-                else
-                {
-                    await _stockrepo.Createasync(search_in_fmp.Data);
-                    stock = await _stockrepo.GetbySymbolAsync(symbol);
-                }
+                await _DBcontext.Holdings.AddAsync(added_item);
+                await _DBcontext.SaveChangesAsync();
+
+                return true;
             }
-
-
-            if (stock == null) return Result<List<Stock>>.Error("Stock not found", 400);
-
-            Holding added_item = new Holding
+            catch (Exception ex)
             {
-                StockID = stock.ID,
-                AppUserID = User.Id
-            };
-
-            await _DBcontext.portfolios.AddAsync(added_item);
-            await _DBcontext.SaveChangesAsync();
-
-            var portfolioresult = await GetUserPortfolio(User);
-
-            if (portfolioresult.Exit == false) return Result<List<Stock>>.Error(portfolioresult.Errormessage, portfolioresult.Errorcode);
-
-            var portfolio = portfolioresult.Data;
-
-            return Result<List<Stock>>.Exito(portfolio);
+                return false;
+            }
+            ;
         }
 
         public async Task<List<Stock>?> GetHoldingByUser(AppUser User)

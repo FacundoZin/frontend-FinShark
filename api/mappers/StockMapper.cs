@@ -52,5 +52,14 @@ namespace api.mappers
             };
         }
 
+        public static AddedstockToHolding ToAddedStockHoldingfromStock(this Stock stock)
+        {
+            return new AddedstockToHolding
+            {
+                Symbol = stock.Symbol,
+            };
+
+        }
+
     }
 }
