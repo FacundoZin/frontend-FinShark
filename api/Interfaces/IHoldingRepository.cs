@@ -7,9 +7,9 @@ using api.Models;
 
 namespace api.Interfaces
 {
-    public interface IPortfolioService
+    public interface IHoldingRepository
     {
-        Task<Result<List<Stock>>> GetUserPortfolio(AppUser User);
+        Task<List<Stock>?> GetHoldingByUser(AppUser User);
         Task<Result<List<Stock>>> AddStockToPortfolio(AppUser User, string symbol);
         Task<Result<List<Stock>>> DeleteStock(AppUser user, string symbol);
         Task<bool> ContainStock(string symbol, AppUser User);

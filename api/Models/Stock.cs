@@ -26,7 +26,7 @@ namespace api.Models
         public long MarketCap { get; set; }
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
-        public List<Portfolio> portfolios { get; set; } = new List<Portfolio>();
+        public List<Holding> Holdings { get; set; } = new List<Holding>();
 
     }
 }

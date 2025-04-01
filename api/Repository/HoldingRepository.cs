@@ -13,14 +13,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace api.Repository
 {
-    public class PortfolioRepository : IPortfolioService
+    public class HoldingRepository : IHoldingRepository
     {
         private ApplicationDBcontext _DBcontext;
         private readonly UserManager<AppUser> _usermanager;
-        private readonly IstockService _stockrepo;
+        private readonly IStockRepository _stockrepo;
         private readonly IFMPService _FMPservice;
 
-        public PortfolioRepository(ApplicationDBcontext dBcontext, UserManager<AppUser> userManager, IstockService stockservice,
+        public HoldingRepository(ApplicationDBcontext dBcontext, UserManager<AppUser> userManager, IStockRepository stockservice,
         IFMPService fMPService)
         {
             _DBcontext = dBcontext;
@@ -51,7 +51,7 @@ namespace api.Repository
 
             if (stock == null) return Result<List<Stock>>.Error("Stock not found", 400);
 
-            Portfolio added_item = new Portfolio
+            Holding added_item = new Holding
             {
                 StockID = stock.ID,
                 AppUserID = User.Id
@@ -69,9 +69,9 @@ namespace api.Repository
             return Result<List<Stock>>.Exito(portfolio);
         }
 
-        public async Task<Result<List<Stock>>> GetUserPortfolio(AppUser User)
+        public async Task<List<Stock>?> GetHoldingByUser(AppUser User)
         {
-            var portfolio = await _DBcontext.portfolios.Where(p => p.AppUserID == User!.Id)
+            var Holding = await _DBcontext.Holdings.Where(p => p.AppUserID == User!.Id)
             .Select(S => new Stock
             {
                 ID = S.StockID,
@@ -83,9 +83,9 @@ namespace api.Repository
                 MarketCap = S.Stock.MarketCap
             }).ToListAsync();
 
-            if (portfolio == null) return Result<List<Stock>>.Error("Portfolio not found", 400);
+            if (Holding == null) return null;
 
-            return Result<List<Stock>>.Exito(portfolio);
+            return Holding!;
         }
 
         public async Task<Result<List<Stock>>> DeleteStock(AppUser user, string symbol)
@@ -94,7 +94,7 @@ namespace api.Repository
 
             if (stock == null) return Result<List<Stock>>.Error("Stock not found", 400);
 
-            Portfolio delete_item = new Portfolio
+            Holding delete_item = new Holding
             {
                 StockID = stock.ID,
                 AppUserID = user.Id

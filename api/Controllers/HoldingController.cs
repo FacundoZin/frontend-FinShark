@@ -6,6 +6,7 @@ using api.Extensions;
 using api.Interfaces;
 using api.Models;
 using api.Repository;
+using api.Services.HoldingService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -13,35 +14,30 @@ using Microsoft.AspNetCore.Mvc;
 namespace api.Controllers
 {
 
-    [Route("api/portfolio")]
-    public class PortfolioController : ControllerBase
+    [Route("api/holding")]
+    public class HoldingController : ControllerBase
     {
-        private readonly IPortfolioService _PortfolioRepo;
+        private readonly IHoldingRepository _PortfolioRepo;
         private readonly IaccountService _AccountService;
+        private readonly IHoldingService _HoldingService;
 
-        public PortfolioController(IPortfolioService portfoliorepo, IaccountService accountservice)
+        public HoldingController(IHoldingRepository portfoliorepo, IaccountService accountservice, IHoldingService holdingService)
         {
             _PortfolioRepo = portfoliorepo;
             _AccountService = accountservice;
+            _HoldingService = holdingService;
         }
 
         [HttpGet]
         [Authorize]
-        public async Task<IActionResult> GetUserPortfolio()
+        public async Task<IActionResult> GetUserHolding()
         {
             var username = User.getUserName();
-            var user = await _AccountService.FindByname(username);
+            var result = await _HoldingService.GetHoldingUser(username);
 
-            var portfolioresult = await _PortfolioRepo.GetUserPortfolio(user);
+            if (result.Exit == false) return StatusCode(result.Errorcode, result.Errormessage);
 
-            if (portfolioresult.Exit == false)
-            {
-                return StatusCode(portfolioresult.Errorcode, portfolioresult.Errormessage);
-            }
-            else
-            {
-                return Ok(portfolioresult.Data);
-            }
+            return Ok(result.Data);
         }
 
         [HttpPut]

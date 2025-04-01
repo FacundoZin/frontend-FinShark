@@ -6,11 +6,12 @@ using System.Threading.Tasks;
 
 namespace api.Models
 {
-    [Table("Portfolios")]
-    public class Portfolio
+    [Table("Holdings")]
+    public class Holding
     {
         public string AppUserID { get; set; }
         public int StockID { get; set; }
+
         public AppUser AppUser { get; set; }
         public Stock Stock { get; set; }
     }
