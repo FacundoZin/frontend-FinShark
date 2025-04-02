@@ -11,7 +11,6 @@ namespace api.Interfaces
     {
         Task<List<Stock>?> GetHoldingByUser(AppUser User);
         Task<bool> AddStockToHolding(AppUser User, Stock stock);
-        Task<Result<List<Stock>>> DeleteStock(AppUser user, string symbol);
-        Task<bool> ContainStock(string symbol, AppUser User);
+        Task<bool> DeleteStock(AppUser user, Stock stock);
     }
 }

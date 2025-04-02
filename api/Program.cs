@@ -6,6 +6,7 @@ using api.Repository;
 using api.Services;
 using api.Services.CommentService;
 using api.Services.FMPconnectorService;
+using api.Services.HoldingService;
 using api.Services.StockService;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
@@ -29,12 +30,14 @@ builder.Services.AddDbContext<ApplicationDBcontext>(options =>
 
 builder.Services.AddScoped<IStockRepository, StockRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
+builder.Services.AddScoped<IHoldingRepository, HoldingRepository>();
 
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
-builder.Services.AddScoped<IPortfolioService, PortfolioRepository>();
+builder.Services.AddScoped<IHoldingService, HoldingService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IaccountService, AccountService>();
+
 builder.Services.AddScoped<IFMPService, FMPService>();
 builder.Services.AddHttpClient<IFMPService, FMPService>();
 

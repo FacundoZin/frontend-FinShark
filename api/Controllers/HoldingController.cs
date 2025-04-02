@@ -17,14 +17,10 @@ namespace api.Controllers
     [Route("api/holding")]
     public class HoldingController : ControllerBase
     {
-        private readonly IHoldingRepository _PortfolioRepo;
-        private readonly IaccountService _AccountService;
         private readonly IHoldingService _HoldingService;
 
-        public HoldingController(IHoldingRepository portfoliorepo, IaccountService accountservice, IHoldingService holdingService)
+        public HoldingController(IHoldingService holdingService)
         {
-            _PortfolioRepo = portfoliorepo;
-            _AccountService = accountservice;
             _HoldingService = holdingService;
         }
 
@@ -57,18 +53,11 @@ namespace api.Controllers
         public async Task<IActionResult> DeleteStock(string symbol)
         {
             var username = User.getUserName();
-            var appuser = await _AccountService.FindByname(username);
+            var result = await _HoldingService.DeleteStock(username, symbol);
 
-            if (await _PortfolioRepo.ContainStock(symbol, appuser) == false) return BadRequest("the stock is not on the portfolio");
+            if (result.Exit == false) return StatusCode(result.Errorcode, result.Errormessage);
 
-            var result = await _PortfolioRepo.DeleteStock(appuser, symbol);
-
-            if (result.Exit == false)
-            {
-                return StatusCode(result.Errorcode, result.Errormessage);
-            }
-
-            return Ok();
+            return Ok(result.Data);
         }
 
     }

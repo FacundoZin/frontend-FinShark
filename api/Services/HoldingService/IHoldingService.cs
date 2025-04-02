@@ -12,6 +12,7 @@ namespace api.Services.HoldingService
     {
         Task<Result<List<StockDto>?>> GetHoldingUser(string username);
         Task<Result<AddedstockToHolding>> AddStock(string username, string symbol);
+        Task<Result<Stock?>> DeleteStock(string username, string symbol);
 
     }
 }

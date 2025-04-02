@@ -16,17 +16,10 @@ namespace api.Repository
     public class HoldingRepository : IHoldingRepository
     {
         private ApplicationDBcontext _DBcontext;
-        private readonly UserManager<AppUser> _usermanager;
-        private readonly IStockRepository _stockrepo;
-        private readonly IFMPService _FMPservice;
 
-        public HoldingRepository(ApplicationDBcontext dBcontext, UserManager<AppUser> userManager, IStockRepository stockservice,
-        IFMPService fMPService)
+        public HoldingRepository(ApplicationDBcontext dBcontext)
         {
             _DBcontext = dBcontext;
-            _usermanager = userManager;
-            _stockrepo = stockservice;
-            _FMPservice = fMPService;
         }
 
         public async Task<bool> AddStockToHolding(AppUser User, Stock stock)
@@ -71,40 +64,26 @@ namespace api.Repository
             return Holding!;
         }
 
-        public async Task<Result<List<Stock>>> DeleteStock(AppUser user, string symbol)
+        public async Task<bool> DeleteStock(AppUser user, Stock stock)
         {
-            var stock = await _stockrepo.GetbySymbolAsync(symbol);
-
-            if (stock == null) return Result<List<Stock>>.Error("Stock not found", 400);
-
             Holding delete_item = new Holding
             {
                 StockID = stock.ID,
                 AppUserID = user.Id
             };
 
-            _DBcontext.portfolios.Remove(delete_item);
-            await _DBcontext.SaveChangesAsync();
+            _DBcontext.Holdings.Remove(delete_item);
+            int rowsAffected = await _DBcontext.SaveChangesAsync();
 
-            return Result<List<Stock>>.Exito(null);
-        }
-
-        public async Task<bool> ContainStock(string symbol, AppUser User)
-        {
-            var portfolioresult = await GetUserPortfolio(User);
-
-            if (portfolioresult.Exit == false) return false;
-
-            var portfolio = portfolioresult.Data;
-
-            if (portfolio.Any(p => p.Symbol.ToLower() == symbol.ToLower()))
-            {
-                return true;
-            }
-            else
+            if (rowsAffected == 0)
             {
                 return false;
             }
+            else
+            {
+                return true;
+            }
         }
+
     }
 }
