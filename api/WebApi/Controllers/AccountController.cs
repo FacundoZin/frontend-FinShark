@@ -33,7 +33,7 @@ namespace api.WebApi.Controllers
 
             var User = await _Accountservice.LoginAsync(login);
 
-            if (!User.Success) return Unauthorized(User.errormessage);
+            if (!User.Exit) return StatusCode(User.Errorcode, User.Errormessage);
 
             return Ok(User);
         }
@@ -49,7 +49,7 @@ namespace api.WebApi.Controllers
 
             var user = await _Accountservice.RegisterAsync(register);
 
-            if (!user.Success) return StatusCode(500, user.errormessage);
+            if (!user.Exit) return StatusCode(user.Errorcode,user.Errormessage);
 
             return Ok(user);
         }
