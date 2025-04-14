@@ -1,10 +1,12 @@
 using api.Application.Interfaces.Auth;
 using api.Application.Interfaces.External;
+using api.Application.Interfaces.Identity;
 using api.Application.Interfaces.Reposiories;
 using api.Application.Interfaces.Services;
 using api.Application.UseCases;
 using api.Domain.Entities;
 using api.Infrastructure.Auth;
+using api.Infrastructure.Identity;
 using api.Infrastructure.Persistence.Data;
 using api.Infrastructure.Persistence.Repository;
 using api.Infrastructure.Services;
@@ -17,7 +19,7 @@ using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DEBUG: Verificamos el entorno y si se está leyendo correctamente la clave JWT
+// DEBUG: Verificamos el entorno y si se estï¿½ leyendo correctamente la clave JWT
 Console.WriteLine($"Environment: {builder.Environment.EnvironmentName}");
 Console.WriteLine($"JWT Key: {builder.Configuration["JWT:Key"] ?? "NO DEFINIDA"}");
 
@@ -40,6 +42,7 @@ builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IHoldingService, HoldingService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IIdentityService, IdentityService>();
 builder.Services.AddScoped<IaccountService, AccountService>();
 
 builder.Services.AddScoped<IFMPService, FMPService>();
